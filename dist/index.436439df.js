@@ -471,7 +471,7 @@ const controlRecipes = async function() {
         // Render Recipe
         _recipeViewJsDefault.default.render(_modelJs.state.recipe);
     } catch (err) {
-        console.log(err);
+        _recipeViewJsDefault.default.renderError();
     }
 };
 const init = function() {
@@ -12809,6 +12809,7 @@ const loadRecipe = async function(id) {
         console.log(state.recipe);
     } catch (err) {
         console.error(`${err} ooooo`);
+        throw err;
     }
 };
 
@@ -12859,6 +12860,8 @@ var _fractional = require("fractional");
 class RecipeView {
     _parentElement = document.querySelector('.recipe');
     _data;
+    _errorMessage = 'We could not find that recipe. Please try another one!';
+    _message = '';
     render(data) {
         this._data = data;
         const markup = this._generateMarkup();
@@ -12868,11 +12871,21 @@ class RecipeView {
     _clear() {
         this._parentElement.innerHTML = '';
     }
-    renderSpinner = function() {
+    renderSpinner() {
         const markup = `\n  <div class="spinner">\n          <svg>\n            <use href="${_iconsSvgDefault.default}#icon-loader"></use>\n          </svg>\n        </div>\n   `;
-        this._parentElement.innerHTML = '';
+        this._clear();
         this._parentElement.insertAdjacentHTML('afterbegin', markup);
-    };
+    }
+    renderError(message = this._errorMessage) {
+        const markup = `\n      <div class="error">\n        <div>\n          <svg>\n            <use href="${_iconsSvgDefault.default}#icon-alert-triangle"></use>\n          </svg>\n        </div>\n        <p>${message}</p>\n      </div>\n    `;
+        this._clear();
+        this._parentElement.insertAdjacentHTML('afterbegin', markup);
+    }
+    renderMessage(message = this._message) {
+        const markup = `\n      <div class="message">\n        <div>\n          <svg>\n            <use href="${_iconsSvgDefault.default}#icon-smile"></use>\n          </svg>\n        </div>\n        <p>${message}</p>\n      </div>\n    `;
+        this._clear();
+        this._parentElement.insertAdjacentHTML('afterbegin', markup);
+    }
     addHandlerRender(handler) {
         [
             'hashchange',
