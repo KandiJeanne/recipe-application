@@ -529,8 +529,14 @@ const controlAddBookmark = function() {
 const controlBookmarks = function() {
     _bookmarksViewJsDefault.default.render(_modelJs.state.bookmarks);
 };
-const controlAddRecipe = function(newRecipe) {
-    console.log(newRecipe);
+const controlAddRecipe = async function(newRecipe) {
+    try {
+        // Upload the new recipe
+        await _modelJs.uploadRecipe(newRecipe);
+    } catch (err) {
+        console.error(err);
+        _addRecipeViewJsDefault.default.renderError(err.message);
+    }
 };
 const init = function() {
     _bookmarksViewJsDefault.default.addHandlerRender(controlBookmarks);
@@ -542,9 +548,6 @@ const init = function() {
     _addRecipeViewJsDefault.default._addHandlerUpload(controlAddRecipe);
 };
 init();
-const clearBookmarks = function() {
-    localStorage.clear('bookmarks');
-}; // clearBookmarks();
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"JacNc","core-js/stable":"eIyVg","regenerator-runtime/runtime":"cH8Iq","./model.js":"6Yfb5","./views/recipeView.js":"9q0mt","./views/searchView.js":"51HTZ","./views/resultsView.js":"a6WEO","./views/paginationView.js":"c2v8w","./views/bookmarksView.js":"cUfi0","./views/addRecipeView.js":"4NyJt"}],"JacNc":[function(require,module,exports) {
 exports.interopDefault = function(a) {
@@ -12863,6 +12866,8 @@ parcelHelpers.export(exports, "addBookmark", ()=>addBookmark
 );
 parcelHelpers.export(exports, "deleteBookmark", ()=>deleteBookmark
 );
+parcelHelpers.export(exports, "uploadRecipe", ()=>uploadRecipe
+);
 var _config = require("./config");
 var _helpers = require("./helpers");
 const state = {
@@ -12952,6 +12957,27 @@ const init = function() {
     if (storage) state.bookmarks = JSON.parse(storage);
 };
 init();
+const clearBookmarks = function() {
+    localStorage.clear('bookmarks');
+};
+const uploadRecipe = async function(newRecipe) {
+    try {
+        const ingredients = Object.entries(newRecipe).filter((entry)=>entry[0].startsWith('ingredient') && entry[1] !== ''
+        ).map((ing)=>{
+            const ingArr = ing[1].replaceAll(' ', '').split(',');
+            if (ingArr.length !== 3) throw new Error('Wrong ingredient format. Please use the correct format!');
+            const [quantity, unit, description] = ingArr;
+            return {
+                quantity: quantity ? +quantity : null,
+                unit,
+                description
+            };
+        });
+        console.log(ingredients);
+    } catch (err) {
+        throw err;
+    }
+};
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"JacNc","./config":"beA2m","./helpers":"9l3Yy"}],"beA2m":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
