@@ -1,4 +1,5 @@
 import View from './View';
+import { RES_PER_PAGE } from '../config';
 
 import icons from 'url:../../img/icons.svg';
 
